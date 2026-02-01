@@ -9,16 +9,14 @@
             --primary: #2c3e50; --accent: #3498db; --bg: #f5f6fa;
             --white: #ffffff; --border: #dcdde1; 
             --occupied: #e1f5fe; --overdue: #ff7675; --available: #55efc4;
+            --key-grey: #dfe6e9;
         }
+        * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         
-        header { 
-            background: var(--primary); color: white; padding: 15px 25px; 
-            border-radius: 8px; margin-bottom: 20px;
-        }
+        header { background: var(--primary); color: white; padding: 15px 25px; border-radius: 8px; margin-bottom: 20px; }
         .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         
-        /* Stats Bar */
         .stats-bar { 
             display: flex; gap: 20px; background: rgba(255,255,255,0.1); 
             padding: 10px 20px; border-radius: 5px; margin-top: 15px; font-size: 14px;
@@ -26,10 +24,7 @@
         .stat-item span { font-weight: bold; color: var(--available); }
 
         .search-bar { flex-grow: 1; max-width: 400px; }
-        #mainSearch { 
-            width: 100%; padding: 10px 15px; border-radius: 20px; border: none; 
-            font-size: 14px; outline: none;
-        }
+        #mainSearch { width: 100%; padding: 10px 15px; border-radius: 20px; border: none; font-size: 14px; outline: none; }
 
         .tab-bar { display: flex; gap: 5px; margin-bottom: 10px; border-bottom: 2px solid var(--border); overflow-x: auto; }
         .tab-btn { padding: 12px 20px; border: none; background: #ddd; cursor: pointer; border-radius: 8px 8px 0 0; font-weight: bold; }
@@ -44,30 +39,21 @@
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; padding-bottom: 30px; }
         
-        .card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 15px; transition: 0.2s; position: relative; }
+        .card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px; transition: 0.2s; position: relative; }
         .card.has-data { background: var(--occupied); border-left: 5px solid var(--accent); }
         .card.overdue { background: #ffeaa7; border-left: 5px solid var(--overdue); }
-        .card.found { border: 3px solid #f1c40f; transform: scale(1.02); }
+        .card.key-received { background: var(--key-grey) !important; border-left: 5px solid #7f8c8d; }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px; }
+        .room-label { font-size: 18px; font-weight: bold; color: var(--primary); }
+        .key-container { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: bold; color: var(--primary); background: #f1f2f6; padding: 4px 8px; border-radius: 15px; border: 1px solid #ddd; }
+        .key-container input { width: 14px !important; height: 14px !important; margin: 0 !important; cursor: pointer; }
 
         .card label { display: block; font-size: 10px; font-weight: bold; color: #7f8c8d; margin-top: 8px; text-transform: uppercase; }
         .card input { width: 100%; padding: 6px; border: 1px solid #eee; border-radius: 4px; font-size: 13px; margin-top: 2px; }
-        .card .room-label { font-size: 18px; font-weight: bold; color: var(--primary); border: none; background: transparent; pointer-events: none; }
-        
-        .error-msg { color: var(--overdue); font-size: 10px; display: none; font-weight: bold; }
 
-        .controls { display: flex; gap: 10px; margin-top: 10px; }
+        .controls { display: flex; gap: 10px; }
         .btn { border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
-        .btn-excel { background: #27ae60; }
-        .btn-print { background: #8e44ad; }
-        .btn-reset { background: #e74c3c; }
-
-        @media print {
-            header, .tab-bar, .sub-tab-bar, .controls { display: none !important; }
-            .page, .section { display: block !important; }
-            .grid { display: block !important; }
-            .card:not(.has-data) { display: none; }
-            body { background: white; }
-        }
     </style>
 </head>
 <body>
@@ -75,20 +61,17 @@
 <header>
     <div class="header-top">
         <h1>ROOM ALLOCATION MASTER</h1>
-        <div class="search-bar">
-            <input type="text" id="mainSearch" placeholder="Search Guest or Room..." onkeyup="searchCards()">
-        </div>
+        <div class="search-bar"><input type="text" id="mainSearch" placeholder="Search Guest..." onkeyup="searchCards()"></div>
         <div class="controls">
-            <button class="btn btn-excel" onclick="exportToCSV()">Export Excel (CSV)</button>
-            <button class="btn btn-print" onclick="window.print()">Print Report</button>
-            <button class="btn btn-reset" onclick="resetAll()">Reset System</button>
+            <button class="btn" style="background:#27ae60" onclick="exportToCSV()">Export CSV</button>
+            <button class="btn" style="background:#e74c3c" onclick="resetAll()">Reset System</button>
         </div>
     </div>
     <div class="stats-bar">
         <div class="stat-item">Total Capacity: <span id="stat-total">0</span></div>
         <div class="stat-item">Occupied: <span id="stat-occ" style="color:#3498db">0</span></div>
         <div class="stat-item">Available: <span id="stat-avail">0</span></div>
-        <div class="stat-item">Overdue Checkouts: <span id="stat-overdue" style="color:#e74c3c">0</span></div>
+        <div class="stat-item">Overdue: <span id="stat-overdue" style="color:#e74c3c">0</span></div>
     </div>
 </header>
 
@@ -99,7 +82,12 @@
 </div>
 
 <div id="SingleBlock" class="page active-block">
-    <div class="sub-tab-bar"><button class="sub-btn active" onclick="navL2(event, 'SingleBlock', 'Ganga')">Ganga</button><button class="sub-btn" onclick="navL2(event, 'SingleBlock', 'Yamuna')">Yamuna</button><button class="sub-btn" onclick="navL2(event, 'SingleBlock', 'Saraswati')">Saraswati</button><button class="sub-btn" onclick="navL2(event, 'SingleBlock', 'Triveni')">Triveni</button></div>
+    <div class="sub-tab-bar">
+        <button class="sub-btn active" onclick="navL2(event, 'SingleBlock', 'Ganga')">Ganga</button>
+        <button class="sub-btn" onclick="navL2(event, 'SingleBlock', 'Yamuna')">Yamuna</button>
+        <button class="sub-btn" onclick="navL2(event, 'SingleBlock', 'Saraswati')">Saraswati</button>
+        <button class="sub-btn" onclick="navL2(event, 'SingleBlock', 'Triveni')">Triveni</button>
+    </div>
     <div id="Ganga" class="section active-block"><div class="grid" id="grid-Ganga"></div></div>
     <div id="Yamuna" class="section"><div class="grid" id="grid-Yamuna"></div></div>
     <div id="Saraswati" class="section"><div class="grid" id="grid-Saraswati"></div></div>
@@ -107,27 +95,61 @@
 </div>
 
 <div id="Bodhisatva" class="page">
-    <div class="sub-tab-bar"><button class="sub-btn active" onclick="navL2(event, 'Bodhisatva', 'B-F1')">1st Floor</button><button class="sub-btn" onclick="navL2(event, 'Bodhisatva', 'B-F2')">2nd Floor</button><button class="sub-btn" onclick="navL2(event, 'Bodhisatva', 'B-F3')">3rd Floor</button></div>
-    <div id="B-F1" class="section active-block"><div class="grid" id="grid-B-F1"></div></div>
-    <div id="B-F2" class="section"><div class="grid" id="grid-B-F2"></div></div>
-    <div id="B-F3" class="section"><div class="grid" id="grid-B-F3"></div></div>
+    <div class="sub-tab-bar">
+        <button class="sub-btn active" onclick="navL2(event, 'Bodhisatva', 'B1')">1st Floor</button>
+        <button class="sub-btn" onclick="navL2(event, 'Bodhisatva', 'B2')">2nd Floor</button>
+        <button class="sub-btn" onclick="navL2(event, 'Bodhisatva', 'B3')">3rd Floor</button>
+    </div>
+    <div id="B1" class="section active-block"><div class="grid" id="grid-B1"></div></div>
+    <div id="B2" class="section"><div class="grid" id="grid-B2"></div></div>
+    <div id="B3" class="section"><div class="grid" id="grid-B3"></div></div>
 </div>
 
 <div id="Dormitories" class="page">
-    <div class="sub-tab-bar"><button class="sub-btn active" onclick="navL2(event, 'Dormitories', 'Nanak')">Nanak Dham</button><button class="sub-btn" onclick="navL2(event, 'Dormitories', 'Vishwanath')">Vishwanath Dham</button><button class="sub-btn" onclick="navL2(event, 'Dormitories', 'Gyaneshwar')">Gyaneshwar Dham</button></div>
-    <div id="Nanak" class="section active-block"><h3>1st Floor</h3><div class="grid" id="grid-Nanak-F1"></div><h3>2nd Floor</h3><div class="grid" id="grid-Nanak-F2"></div><h3>3rd Floor</h3><div class="grid" id="grid-Nanak-F3"></div></div>
-    <div id="Vishwanath" class="section"><h3>1st Floor</h3><div class="grid" id="grid-Vish-F1"></div><h3>2nd Floor</h3><div class="grid" id="grid-Vish-F2"></div><h3>3rd Floor</h3><div class="grid" id="grid-Vish-F3"></div></div>
-    <div id="Gyaneshwar" class="section"><h3>1st Floor</h3><div class="grid" id="grid-Gyan-F1"></div><h3>2nd Floor</h3><div class="grid" id="grid-Gyan-F2"></div><h3>3rd Floor</h3><div class="grid" id="grid-Gyan-F3"></div></div>
+    <div class="sub-tab-bar">
+        <button class="sub-btn active" onclick="navL2(event, 'Dormitories', 'Nanak')">Nanak Dham</button>
+        <button class="sub-btn" onclick="navL2(event, 'Dormitories', 'Vish')">Vishwanath Dham</button>
+        <button class="sub-btn" onclick="navL2(event, 'Dormitories', 'Gyan')">Gyaneshwar Dham</button>
+    </div>
+    <div id="Nanak" class="section active-block">
+        <h3>1st Floor (60)</h3><div class="grid" id="grid-N-F1"></div>
+        <h3>2nd Floor (40)</h3><div class="grid" id="grid-N-F2"></div>
+        <h3>3rd Floor (28)</h3><div class="grid" id="grid-N-F3"></div>
+    </div>
+    <div id="Vish" class="section">
+        <h3>1st Floor (60)</h3><div class="grid" id="grid-V-F1"></div>
+        <h3>2nd Floor (42)</h3><div class="grid" id="grid-V-F2"></div>
+        <h3>3rd Floor (28)</h3><div class="grid" id="grid-V-F3"></div>
+    </div>
+    <div id="Gyan" class="section">
+        <h3>1st Floor (24)</h3><div class="grid" id="grid-G-F1"></div>
+        <h3>2nd Floor (24)</h3><div class="grid" id="grid-G-F2"></div>
+        <h3>3rd Floor (24)</h3><div class="grid" id="grid-G-F3"></div>
+    </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDP9Wa_mt2zrj8IGnXQrO-KBUh1QO_im8Q",
+        authDomain: "room-master-e4b85.firebaseapp.com",
+        databaseURL: "https://room-master-e4b85-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "room-master-e4b85",
+        appId: "1:358583219165:web:b2dd312af42c730e7a7c34"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     const setup = [
         { id: 'grid-Ganga', n: 12, lbl: 'Room' }, { id: 'grid-Yamuna', n: 12, lbl: 'Room' },
         { id: 'grid-Saraswati', n: 12, lbl: 'Room' }, { id: 'grid-Triveni', n: 12, lbl: 'Room' },
-        { id: 'grid-B-F1', n: 15, lbl: 'Room' }, { id: 'grid-B-F2', n: 15, lbl: 'Room' }, { id: 'grid-B-F3', n: 15, lbl: 'Room' },
-        { id: 'grid-Nanak-F1', n: 60, lbl: 'Bed' }, { id: 'grid-Nanak-F2', n: 40, lbl: 'Bed' }, { id: 'grid-Nanak-F3', n: 28, lbl: 'Bed' },
-        { id: 'grid-Vish-F1', n: 60, lbl: 'Bed' }, { id: 'grid-Vish-F2', n: 42, lbl: 'Bed' }, { id: 'grid-Vish-F3', n: 28, lbl: 'Bed' },
-        { id: 'grid-Gyan-F1', n: 24, lbl: 'Bed' }, { id: 'grid-Gyan-F2', n: 24, lbl: 'Bed' }, { id: 'grid-Gyan-F3', n: 24, lbl: 'Bed' }
+        { id: 'grid-B1', n: 15, lbl: 'Room' }, { id: 'grid-B2', n: 15, lbl: 'Room' }, { id: 'grid-B3', n: 15, lbl: 'Room' },
+        { id: 'grid-N-F1', n: 60, lbl: 'Bed' }, { id: 'grid-N-F2', n: 40, lbl: 'Bed' }, { id: 'grid-N-F3', n: 28, lbl: 'Bed' },
+        { id: 'grid-V-F1', n: 60, lbl: 'Bed' }, { id: 'grid-V-F2', n: 42, lbl: 'Bed' }, { id: 'grid-V-F3', n: 28, lbl: 'Bed' },
+        { id: 'grid-G-F1', n: 24, lbl: 'Bed' }, { id: 'grid-G-F2', n: 24, lbl: 'Bed' }, { id: 'grid-G-F3', n: 24, lbl: 'Bed' }
     ];
 
     function init() {
@@ -140,79 +162,79 @@
                 const div = document.createElement('div');
                 div.className = 'card'; div.id = `card-${uid}`;
                 div.innerHTML = `
-                    <input type="text" class="room-label searchable" value="${s.lbl} ${i}" readonly>
-                    <label>Guest Name</label><input type="text" id="name-${uid}" class="searchable" oninput="validate('${uid}')">
+                    <div class="card-header">
+                        <span class="room-label">${s.lbl} ${i}</span>
+                        <div class="key-container">Key <input type="checkbox" id="key-${uid}" onchange="validate('${uid}')"></div>
+                    </div>
+                    <label>Guest Name</label><input type="text" id="name-${uid}" oninput="validate('${uid}')">
                     <label>Persons</label><input type="number" id="p-${uid}" oninput="save()">
                     <label>Check In</label><input type="date" id="in-${uid}" oninput="validate('${uid}')">
                     <label>Check Out</label><input type="date" id="out-${uid}" oninput="validate('${uid}')">
-                    <div id="err-${uid}" class="error-msg">Invalid Dates!</div>
                 `;
                 container.appendChild(div);
             }
         });
         document.getElementById('stat-total').innerText = total;
-        load();
+
+        db.ref('roomData/').on('value', snap => {
+            const data = snap.val() || {};
+            Object.keys(data).forEach(id => {
+                const el = document.getElementById(id);
+                if(el) { if(el.type === 'checkbox') el.checked = data[id]; else el.value = data[id]; }
+            });
+            document.querySelectorAll('.card').forEach(c => validate(c.id.replace('card-',''), false));
+        });
     }
 
-    function validate(uid) {
+    function validate(uid, shouldSave = true) {
         const name = document.getElementById(`name-${uid}`).value;
-        const cin = document.getElementById(`in-${uid}`).value;
+        const key = document.getElementById(`key-${uid}`).checked;
         const cout = document.getElementById(`out-${uid}`).value;
         const card = document.getElementById(`card-${uid}`);
-        const err = document.getElementById(`err-${uid}`);
         const today = new Date().toISOString().split('T')[0];
 
-        // 1. Occupancy check
-        if(name.trim()) card.classList.add('has-data');
-        else card.classList.remove('has-data');
-
-        // 2. Date Validation
-        if(cin && cout && cout < cin) err.style.display = 'block';
-        else err.style.display = 'none';
-
-        // 3. Overdue Alert
-        if(cout && cout < today && name.trim()) card.classList.add('overdue');
-        else card.classList.remove('overdue');
+        if(name.trim()) card.classList.add('has-data'); else card.classList.remove('has-data');
+        if(key) card.classList.add('key-received'); else card.classList.remove('key-received');
+        if(cout && cout < today && name.trim()) card.classList.add('overdue'); else card.classList.remove('overdue');
 
         updateStats();
-        save();
+        if(shouldSave) save();
     }
 
     function updateStats() {
-        const occ = document.querySelectorAll('.has-data').length;
         const total = parseInt(document.getElementById('stat-total').innerText);
+        const occ = document.querySelectorAll('.has-data').length;
         const overdue = document.querySelectorAll('.overdue').length;
         document.getElementById('stat-occ').innerText = occ;
         document.getElementById('stat-avail').innerText = total - occ;
         document.getElementById('stat-overdue').innerText = overdue;
     }
 
-    function exportToCSV() {
-        let csv = "Location,Room/Bed,Guest Name,Persons,In,Out\n";
-        setup.forEach(s => {
-            for (let i = 1; i <= s.n; i++) {
-                const uid = `${s.id}-${i}`;
-                const name = document.getElementById(`name-${uid}`).value;
-                if(name) {
-                    csv += `${s.id},${s.lbl} ${i},${name},${document.getElementById(`p-${uid}`).value},${document.getElementById(`in-${uid}`).value},${document.getElementById(`out-${uid}`).value}\n`;
-                }
-            }
-        });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.setAttribute('href', url);
-        a.setAttribute('download', 'Room_Allocation_Report.csv');
-        a.click();
+    function save() {
+        const d = {};
+        document.querySelectorAll('input').forEach(i => { if(i.id) d[i.id] = (i.type==='checkbox')?i.checked:i.value; });
+        db.ref('roomData/').set(d);
     }
 
-    // Navigation and Storage helpers
-    function navL1(e, id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-block')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active-block'); e.currentTarget.classList.add('active'); }
-    function navL2(e, pId, sId) { const p = document.getElementById(pId); p.querySelectorAll('.section').forEach(s => s.classList.remove('active-block')); p.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active')); document.getElementById(sId).classList.add('active-block'); e.currentTarget.classList.add('active'); }
-    function searchCards() { const val = document.getElementById('mainSearch').value.toLowerCase(); document.querySelectorAll('.card').forEach(c => { c.classList.remove('found'); if(val && c.innerText.toLowerCase().includes(val)) c.classList.add('found'); }); }
-    function save() { const data = {}; document.querySelectorAll('input').forEach(i => { if(i.id && i.value) data[i.id] = i.value; }); localStorage.setItem('roomMasterV3', JSON.stringify(data)); }
-    function load() { const stored = localStorage.getItem('roomMasterV3'); if(!stored) return; const data = JSON.parse(stored); Object.keys(data).forEach(id => { const el = document.getElementById(id); if(el) el.value = data[id]; }); document.querySelectorAll('.card').forEach(c => { const uid = c.id.replace('card-',''); validate(uid); }); }
-    function resetAll() { if(confirm("WIPE ALL DATA?")) { localStorage.removeItem('roomMasterV3'); location.reload(); } }
+    window.navL1 = (e, id) => {
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active-block'));
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.getElementById(id).classList.add('active-block');
+        e.currentTarget.classList.add('active');
+    };
+    window.navL2 = (e, p, s) => {
+        document.getElementById(p).querySelectorAll('.section').forEach(sec=>sec.classList.remove('active-block'));
+        document.getElementById(p).querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
+        document.getElementById(s).classList.add('active-block');
+        e.currentTarget.classList.add('active');
+    };
+    window.searchCards = () => {
+        const v = document.getElementById('mainSearch').value.toLowerCase();
+        document.querySelectorAll('.card').forEach(c => {
+            c.style.border = v && c.innerText.toLowerCase().includes(v) ? '3px solid #f1c40f' : '1px solid var(--border)';
+        });
+    };
+    window.resetAll = () => { if(confirm("WIPE ALL CLOUD DATA?")) db.ref('roomData/').set(null); };
 
     init();
 </script>
