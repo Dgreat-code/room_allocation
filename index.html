@@ -48,10 +48,8 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; padding: 20px; }
         .card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); position: relative; border-top: 5px solid transparent; transition: all 0.2s; }
         
-        /* COLOR HIERARCHY */
         .card.is-occupied { border-top-color: var(--occupied-border); background: var(--occupied-bg); }
         .card.is-key { border-top-color: var(--key-pink); background: var(--key-bg); }
-        /* is-due uses !important to override is-key and is-occupied */
         .card.is-due { border-top-color: var(--due-border) !important; background: var(--due-bg) !important; }
         
         .card.selected { outline: 3px solid var(--accent); transform: scale(1.02); z-index: 5; }
@@ -74,6 +72,7 @@
         }
         #bulk-bar input { padding: 8px; border-radius: 5px; border: none; font-size: 13px; }
         .btn-apply { background: #2ecc71; color: white; border: none; padding: 8px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-bulk-clear { background: var(--danger); color: white; border: none; padding: 8px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -172,6 +171,7 @@
     <input type="date" id="bulk-in">
     <input type="date" id="bulk-out">
     <button class="btn-apply" onclick="applyBulk()">Apply All</button>
+    <button class="btn-bulk-clear" onclick="bulkClear()">Clear All Selected</button>
     <button onclick="deselectAll()" style="background:none; border:none; color:white; font-size:11px; cursor:pointer; text-decoration: underline;">Cancel</button>
 </div>
 
@@ -179,7 +179,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-    // FIREBASE CONFIG
     const firebaseConfig = {
         apiKey: "AIzaSyDP9Wa_mt2zrj8IGnXQrO-KBUh1QO_im8Q",
         authDomain: "room-master-e4b85.firebaseapp.com",
@@ -232,6 +231,19 @@
         save(); deselectAll();
     };
 
+    window.bulkClear = () => {
+        if(confirm("Clear data for all selected items?")) {
+            document.querySelectorAll('.bulk-cb:checked').forEach(cb => {
+                const uid = cb.closest('.card').id.replace('card-','');
+                ['name-', 'p-', 'in-', 'out-'].forEach(pre => {
+                    if(document.getElementById(pre+uid)) document.getElementById(pre+uid).value = "";
+                });
+                validate(uid, false);
+            });
+            save(); deselectAll();
+        }
+    };
+
     window.deselectAll = () => {
         document.querySelectorAll('.bulk-cb').forEach(cb => cb.checked = false);
         document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
@@ -240,10 +252,16 @@
 
     function filterBy(type) {
         document.querySelectorAll('.card').forEach(c => {
-            if (type === 'all') c.style.display = 'flex';
-            else if (type === 'occupied') c.style.display = c.classList.contains('is-occupied') ? 'flex' : 'none';
-            else if (type === 'available') c.style.display = !c.classList.contains('is-occupied') ? 'flex' : 'none';
-            else if (type === 'due') c.style.display = c.classList.contains('is-due') ? 'flex' : 'none';
+            if (type === 'all') {
+                c.style.display = 'flex';
+            } else if (type === 'due') {
+                // Strict check: Only show orange cards
+                c.style.display = c.classList.contains('is-due') ? 'flex' : 'none';
+            } else if (type === 'occupied') {
+                c.style.display = c.classList.contains('is-occupied') ? 'flex' : 'none';
+            } else if (type === 'available') {
+                c.style.display = !c.classList.contains('is-occupied') ? 'flex' : 'none';
+            }
         });
     }
 
@@ -271,11 +289,8 @@
         const today = new Date().toISOString().split('T')[0];
         
         card.classList.remove('is-occupied', 'is-due', 'is-key');
-        
         if(name.trim()) card.classList.add('is-occupied');
         if(keyEl && keyEl.checked) card.classList.add('is-key');
-        
-        // Priority check: If due today, color it orange even if 'Key' is selected
         if(name.trim() && out === today) card.classList.add('is-due');
         
         updateStats(); if(shouldSave) save();
@@ -308,7 +323,7 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-block')); 
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
         document.getElementById(id).classList.add('active-block'); 
-        if(e) e.currentTarget.classList.add('active'); else document.getElementById(`tab-${id}`).classList.add('active');
+        if(e) e.currentTarget.classList.add('active'); else if(id) document.getElementById(`tab-${id}`).classList.add('active');
     };
     window.nav2 = (e, s) => { 
         const p = document.getElementById(s).closest('.page');
