@@ -48,9 +48,11 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; padding: 20px; }
         .card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); position: relative; border-top: 5px solid transparent; transition: all 0.2s; }
         
+        /* COLOR HIERARCHY */
         .card.is-occupied { border-top-color: var(--occupied-border); background: var(--occupied-bg); }
-        .card.is-due { border-top-color: var(--due-border); background: var(--due-bg); }
-        .card.is-key { border-top-color: var(--key-pink) !important; background: var(--key-bg) !important; }
+        .card.is-key { border-top-color: var(--key-pink); background: var(--key-bg); }
+        /* is-due uses !important to override is-key and is-occupied */
+        .card.is-due { border-top-color: var(--due-border) !important; background: var(--due-bg) !important; }
         
         .card.selected { outline: 3px solid var(--accent); transform: scale(1.02); z-index: 5; }
 
@@ -177,7 +179,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-    // YOUR CONFIGURATION
+    // FIREBASE CONFIG
     const firebaseConfig = {
         apiKey: "AIzaSyDP9Wa_mt2zrj8IGnXQrO-KBUh1QO_im8Q",
         authDomain: "room-master-e4b85.firebaseapp.com",
@@ -269,9 +271,12 @@
         const today = new Date().toISOString().split('T')[0];
         
         card.classList.remove('is-occupied', 'is-due', 'is-key');
+        
         if(name.trim()) card.classList.add('is-occupied');
-        if(name.trim() && out === today) card.classList.add('is-due');
         if(keyEl && keyEl.checked) card.classList.add('is-key');
+        
+        // Priority check: If due today, color it orange even if 'Key' is selected
+        if(name.trim() && out === today) card.classList.add('is-due');
         
         updateStats(); if(shouldSave) save();
     }
