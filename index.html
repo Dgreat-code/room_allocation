@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,104 +7,209 @@
     <title>ROOM ALLOCATION SYSTEM</title>
     <style>
         :root {
-            --primary: #2c3e50; --accent: #3498db; --bg: #f4f7f6;
-            --white: #ffffff; --border: #dcdde1; 
-            --occupied-bg: #e8f5e9; --occupied-border: #1b5e20;
-            --due-bg: #fff3e0; --due-border: #a65100;
-            --key-bg: #eceff1; --key-pink: #FF69B4; 
-            --danger: #c0392b;
+            --primary: #1e293b; 
+            --accent: #3b82f6; 
+            --bg: #f8fafc;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --border: #e2e8f0; 
+            --occupied-bg: #dcfce7; 
+            --occupied-border: #22c55e;
+            --due-bg: #fff7ed; 
+            --due-border: #f97316;
+            --key-pink: #ec4899; 
+            --danger: #ef4444;
         }
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 120px; color: #2f3640; }
-        
-        header { background: var(--primary); color: white; padding: 15px 25px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .header-left { display: flex; align-items: center; gap: 20px; }
-        .header-right { display: flex; align-items: center; gap: 10px; }
-        
-        .search-box { width: 220px; padding: 8px 15px; border-radius: 5px; border: none; font-size: 14px; outline: none; }
-        .btn-header { color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; }
-        .btn-main { background: #8e44ad; }
-        
-        .stats-container { display: flex; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; }
-        .stat-card { background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 5px; font-size: 13px; cursor: pointer; transition: 0.2s; }
-        .stat-card:hover { background: rgba(255,255,255,0.25); }
 
-        .nav-l1 { display: flex; background: #dfe6e9; padding: 10px 25px 0; gap: 6px; }
-        .tab-btn { padding: 10px 22px; border: none; background: #b2bec3; cursor: pointer; border-radius: 6px 6px 0 0; font-weight: 600; font-size: 13px; }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        
+        body { 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding-bottom: 120px; 
+            color: var(--text-main); 
+        }
+
+        header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 20px 25px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+        }
+
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        
+        .search-box { 
+            width: 280px; padding: 10px 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); 
+            background: rgba(255,255,255,0.05); color: white; outline: none; 
+        }
+
+        .btn-header { border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; color: white; }
+        
+        .stats-container { display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .stat-card { 
+            background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 8px; 
+            font-size: 13px; color: #cbd5e1; cursor: pointer; border: 1px solid transparent;
+        }
+        .stat-card:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
+        .stat-card.active-stat { background: var(--accent) !important; border-color: white !important; color: white !important; }
+        .stat-card b { color: white; margin-left: 5px; }
+
+        .nav-l1 { display: flex; background: #f1f5f9; padding: 15px 25px 0; gap: 8px; border-bottom: 1px solid var(--border); }
+        .tab-btn { padding: 12px 24px; border: none; background: transparent; cursor: pointer; border-radius: 8px 8px 0 0; font-weight: 600; color: var(--text-muted); }
         .tab-btn.active { background: var(--bg); color: var(--accent); }
 
-        .nav-l2 { display: flex; gap: 10px; padding: 12px 25px; background: var(--bg); border-bottom: 1px solid #ddd; }
-        .sub-btn { padding: 6px 18px; border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 5px; font-size: 14px; }
-        .sub-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .nav-l2 { display: flex; gap: 12px; padding: 20px 25px; background: var(--bg); justify-content: flex-start; }
+        .sub-btn { padding: 8px 20px; border: 1px solid var(--border); background: white; cursor: pointer; border-radius: 20px; font-size: 14px; }
+        .sub-btn.active { background: var(--primary); color: white; }
 
-        .nav-l3 { display: flex; gap: 10px; padding: 10px 25px; background: #ececec; overflow-x: auto; }
-        .floor-btn { padding: 8px 15px; border: none; background: #d1d1d1; cursor: pointer; border-radius: 5px; font-size: 12px; font-weight: bold; min-width: 190px; text-align: left; }
-        .floor-btn.active { background: #636e72; color: white; }
-        .floor-btn div { font-weight: normal; font-size: 11px; margin-top: 4px; line-height: 1.4; opacity: 0.9; }
+        .nav-l3 { display: flex; gap: 12px; padding: 10px 25px; background: #f1f5f9; justify-content: flex-start; overflow-x: auto; }
+        .floor-btn { padding: 12px 20px; border: 1px solid var(--border); background: white; cursor: pointer; border-radius: 12px; min-width: 220px; text-align: left; }
+        .floor-btn.active { border-color: var(--accent); background: #eff6ff; }
+
+        .grid { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 20px 25px; max-width: 1400px; }
+        
+        .card { 
+            position: relative; 
+            background: white; border: 1px solid var(--border); border-radius: 10px; 
+            padding: 10px 15px; display: flex; align-items: center; gap: 10px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 5px solid #cbd5e1;
+        }
+
+        .card.is-occupied::after {
+            content: 'ALLOCATED';
+            position: absolute; top: -10px; left: 10px;
+            background: #22c55e; color: white; font-size: 9px; font-weight: 900;
+            padding: 2px 8px; border-radius: 4px; z-index: 10;
+        }
+
+        .card.is-due::after {
+            content: '⚠️ CHECKOUT TODAY';
+            background: #f97316 !important;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .is-bed-style {
+            padding: 5px 15px 5px 5px !important;
+            border-radius: 6px 15px 15px 6px !important;
+            border-left-width: 12px !important;
+            max-width: 100%; height: 60px;
+        }
+
+        .card.is-occupied { border-left-color: var(--occupied-border) !important; background: var(--occupied-bg) !important; }
+        .card.is-due { border-left-color: var(--due-border) !important; background: var(--due-bg) !important; }
+        .card.is-key { border-left-color: var(--key-pink); }
+        .card.selected { border: 2px solid var(--accent); background: #f0f7ff; }
+
+        .card-header { width: 120px; flex-shrink: 0; }
+        .card-header h3 { margin: 0; font-size: 13px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;}
+        
+        .form-group { flex: 1; }
+        .form-group.small-field { flex: 0.2; min-width: 50px; }
+        .form-group label { display: block; font-size: 8px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
+        .form-group input { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 12px; }
+
+        .clear-btn, .print-btn { padding: 8px 12px; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px;}
+        .print-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
 
         .page, .building-section, .floor-section { display: none; }
         .active-block { display: block; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; padding: 20px; }
-        .card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); position: relative; border-top: 5px solid transparent; transition: all 0.2s; }
-        
-        .card.is-occupied { border-top-color: var(--occupied-border); background: var(--occupied-bg); }
-        .card.is-key { border-top-color: var(--key-pink); background: var(--key-bg); }
-        .card.is-due { border-top-color: var(--due-border) !important; background: var(--due-bg) !important; }
-        
-        .card.selected { outline: 3px solid var(--accent); transform: scale(1.02); z-index: 5; }
-
-        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-        .card-header h3 { margin: 0; font-size: 15px; display: flex; align-items: center; gap: 8px; }
-        .key-box { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: bold; color: var(--key-pink); }
-        .key-box input, .bulk-cb { width: 17px; height: 17px; cursor: pointer; }
-
-        .form-group { margin: 0; }
-        .form-group label { display: block; font-size: 10px; font-weight: bold; color: #7f8c8d; text-transform: uppercase; margin-bottom: 3px; }
-        .form-group input { width: 100%; padding: 7px; border: 1px solid #ced4da; border-radius: 4px; font-size: 13px; }
-        
-        .clear-btn { margin-top: 5px; width: 100%; padding: 8px; background: #fff; color: var(--danger); border: 1px solid var(--danger); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
-
         #bulk-bar {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: #8e44ad; color: white; padding: 15px 30px; border-radius: 10px;
-            display: none; align-items: center; gap: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.4); z-index: 2000;
+            position: fixed; bottom: 30px; left: 25px; background: var(--primary); color: white; 
+            padding: 15px 30px; border-radius: 15px; display: none; align-items: center; gap: 15px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 2000;
         }
-        #bulk-bar input { padding: 8px; border-radius: 5px; border: none; font-size: 13px; }
-        .btn-apply { background: #2ecc71; color: white; border: none; padding: 8px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .btn-bulk-clear { background: var(--danger); color: white; border: none; padding: 8px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        /* PRINT STYLES */
+        #print-area { display: none; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+            
+            .print-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                page-break-after: always;
+                padding: 20px 0;
+            }
+
+            .print-card, .print-schedule {
+                width: 500px; height: 320px;
+                border: 2px solid #000;
+                padding: 25px;
+                background: #fff;
+                box-sizing: border-box;
+                font-family: 'Inter', sans-serif;
+            }
+
+            .print-header { text-align: center; font-size: 24px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; }
+            .print-row { font-size: 16px; margin-bottom: 10px; display: flex; border-bottom: 1px dashed #ccc; padding-bottom: 4px; }
+            .print-label { font-weight: bold; width: 160px; }
+            .print-value { flex: 1; }
+
+            .schedule-title { 
+                text-align: center; font-size: 20px; font-weight: bold; 
+                text-transform: uppercase; border-bottom: 2px solid #000; 
+                margin-bottom: 12px; padding-bottom: 5px; 
+            }
+            .schedule-item { 
+                display: flex; justify-content: space-between; 
+                margin-bottom: 6px; font-size: 13px; border-bottom: 1px dotted #888; 
+            }
+            .schedule-footer {
+                margin-top: 10px; padding-top: 8px; border-top: 1.5px solid #000;
+                font-size: 11px; line-height: 1.4;
+            }
+        }
     </style>
 </head>
 <body>
 
-<header>
+<div id="print-area"></div>
+
+<header class="no-print">
     <div class="header-top">
         <div class="header-left">
-            <button onclick="goMain()" class="btn-header btn-main">🏠 MAIN DASHBOARD</button>
-            <h2 style="margin:0; font-size: 18px;">ROOM ALLOCATION</h2>
+            <button onclick="filterByStatus('all', event)" class="btn-header" style="background:var(--accent); border: 2px solid white;">🏠 MAIN DASHBOARD</button>
+            <h2 style="margin:0;">ROOM ALLOCATION</h2>
         </div>
         <div class="header-right">
-            <input type="text" id="globalSearch" class="search-box" placeholder="Search Guest Name..." onkeyup="searchGuest()">
+            <input type="text" id="globalSearch" class="search-box" placeholder="Search Guest, Room or Place..." onkeyup="searchGuest()">
             <button onclick="exportCSV()" class="btn-header" style="background:#27ae60">📊 EXPORT</button>
             <button onclick="resetAllData()" class="btn-header" style="background:var(--danger)">⚠️ RESET ALL</button>
         </div>
     </div>
     <div class="stats-container">
-        <div class="stat-card" onclick="filterBy('all')">Total Capacity: <b id="stat-total">0</b></div>
-        <div class="stat-card" onclick="filterBy('available')">Available: <b id="stat-avail">0</b></div>
-        <div class="stat-card" onclick="filterBy('occupied')">Occupied: <b id="stat-occ">0</b></div>
-        <div class="stat-card" onclick="filterBy('due')">Due Today: <b id="stat-due">0</b></div>
+        <div class="stat-card" onclick="filterByStatus('all', event)">Total: <b id="stat-total">0</b></div>
+        <div class="stat-card" onclick="filterByStatus('avail', event)">Available: <b id="stat-avail">0</b></div>
+        <div class="stat-card" onclick="filterByStatus('occ', event)">Occupied: <b id="stat-occ">0</b></div>
+        <div class="stat-card" onclick="filterByStatus('due', event)">Due Today: <b id="stat-due">0</b></div>
     </div>
 </header>
 
-<nav class="nav-l1">
+<nav class="nav-l1 no-print">
     <button id="tab-SingleBlock" class="tab-btn active" onclick="nav1(event, 'SingleBlock')">Single Block</button>
     <button id="tab-Bodhisatva" class="tab-btn" onclick="nav1(event, 'Bodhisatva')">Bodhisatva</button>
     <button id="tab-Dormitories" class="tab-btn" onclick="nav1(event, 'Dormitories')">Dormitories</button>
 </nav>
 
-<div id="SingleBlock" class="page active-block">
+<div id="SingleBlock" class="page active-block no-print">
     <div class="nav-l2">
         <button id="sub-Ganga" class="sub-btn active" onclick="nav2(event, 'Ganga')">Ganga Awaas</button>
         <button id="sub-Yamuna" class="sub-btn" onclick="nav2(event, 'Yamuna')">Yamuna Awaas</button>
@@ -116,7 +222,7 @@
     <div id="Triveni" class="building-section"><div class="grid" id="grid-Triveni"></div></div>
 </div>
 
-<div id="Bodhisatva" class="page">
+<div id="Bodhisatva" class="page no-print">
     <div class="nav-l2">
         <button id="sub-B-Ground" class="sub-btn active" onclick="nav2(event, 'B-Ground')">Ground Floor</button>
         <button id="sub-B-First" class="sub-btn" onclick="nav2(event, 'B-First')">First Floor</button>
@@ -127,7 +233,7 @@
     <div id="B-Second" class="building-section"><div class="grid" id="grid-BS"></div></div>
 </div>
 
-<div id="Dormitories" class="page">
+<div id="Dormitories" class="page no-print">
     <div class="nav-l2">
         <button id="sub-Nanak" class="sub-btn active" onclick="nav2(event, 'Nanak')">Nanak Dham</button>
         <button id="sub-Vish" class="sub-btn" onclick="nav2(event, 'Vish')">Vishwanath Dham</button>
@@ -165,14 +271,15 @@
     </div>
 </div>
 
-<div id="bulk-bar">
+<div id="bulk-bar" class="no-print">
     <span id="bulk-count">0 Selected</span>
     <input type="text" id="bulk-name" placeholder="Group Name">
+    <input type="text" id="bulk-place" placeholder="Place">
     <input type="date" id="bulk-in">
     <input type="date" id="bulk-out">
-    <button class="btn-apply" onclick="applyBulk()">Apply All</button>
-    <button class="btn-bulk-clear" onclick="bulkClear()">Clear All Selected</button>
-    <button onclick="deselectAll()" style="background:none; border:none; color:white; font-size:11px; cursor:pointer; text-decoration: underline;">Cancel</button>
+    <button onclick="applyBulk()" style="background:#2ecc71; color:white; border:none; padding:8px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Apply All</button>
+    <button onclick="bulkClear()" style="background:var(--danger); color:white; border:none; padding:8px 15px; border-radius:20px; font-weight:bold; cursor:pointer;">Clear</button>
+    <button onclick="deselectAll()" style="background:none; border:none; color:white; cursor:pointer; text-decoration:underline; font-size:12px;">Cancel</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -190,11 +297,11 @@
     const db = firebase.database();
 
     const config = [
-        { id: 'grid-Ganga', n: 12, lbl: 'Room', type: 'room' }, { id: 'grid-Yamuna', n: 12, lbl: 'Room', type: 'room' },
-        { id: 'grid-Saraswati', n: 12, lbl: 'Room', type: 'room' }, { id: 'grid-Triveni', n: 12, lbl: 'Room', type: 'room' },
-        { id: 'grid-BG', n: 15, extra: ['Room 19', 'Room 20', 'SET-1', 'SET-2'], lbl: 'Room', type: 'room' }, 
-        { id: 'grid-BF', n: 15, extra: ['SET-3', 'SET-4'], lbl: 'Room', type: 'room' }, 
-        { id: 'grid-BS', n: 10, lbl: 'Room', type: 'room' },
+        { id: 'grid-Ganga', n: 12, lbl: 'Ganga', type: 'room' }, { id: 'grid-Yamuna', n: 12, lbl: 'Yamuna', type: 'room' },
+        { id: 'grid-Saraswati', n: 12, lbl: 'Saraswati', type: 'room' }, { id: 'grid-Triveni', n: 12, lbl: 'Triveni', type: 'room' },
+        { id: 'grid-BG', n: 15, extra: ['Room 19', 'Room 20', 'SET-1', 'SET-2'], lbl: 'G - ', type: 'room' }, 
+        { id: 'grid-BF', n: 15, extra: ['SET-3', 'SET-4'], lbl: 'F - ', type: 'room' }, 
+        { id: 'grid-BS', n: 15, lbl: 'S - ', type: 'room' },
         { id: 'grid-NG', n: 60, lbl: 'Bed', type: 'bed' }, { id: 'grid-NF', n: 40, lbl: 'Bed', type: 'bed' }, { id: 'grid-NS', n: 28, lbl: 'Bed', type: 'bed' },
         { id: 'grid-VG', n: 60, lbl: 'Bed', type: 'bed' }, { id: 'grid-VF', n: 42, lbl: 'Bed', type: 'bed' }, { id: 'grid-VS', n: 28, lbl: 'Bed', type: 'bed' },
         { id: 'grid-GG', n: 24, lbl: 'Bed', type: 'bed' }, { id: 'grid-GF', n: 24, lbl: 'Bed', type: 'bed' }, { id: 'grid-GS', n: 24, lbl: 'Bed', type: 'bed' }
@@ -202,11 +309,184 @@
 
     function createCard(container, label, uid, type) {
         const div = document.createElement('div');
-        div.className = 'card'; div.id = `card-${uid}`;
+        div.className = (type === 'bed') ? 'card is-bed-style' : 'card'; 
+        div.id = `card-${uid}`;
         const headerH3 = type === 'bed' ? `<h3><input type="checkbox" class="bulk-cb" onchange="toggleSelect('${uid}')"> ${label}</h3>` : `<h3>${label}</h3>`;
-        const keyOption = type === 'room' ? `<div class="key-box"><label>KEY</label><input type="checkbox" id="key-${uid}" onchange="validate('${uid}')"></div>` : '<div></div>';
-        div.innerHTML = `<div class="card-header">${headerH3}${keyOption}</div><div class="form-group"><label>Guest Name</label><input type="text" id="name-${uid}" oninput="validate('${uid}')"></div><div class="form-group"><label>Persons</label><input type="number" id="p-${uid}" oninput="validate('${uid}')"></div><div class="form-group"><label>Check In</label><input type="date" id="in-${uid}" oninput="validate('${uid}')"></div><div class="form-group"><label>Check Out</label><input type="date" id="out-${uid}" oninput="validate('${uid}')"></div><button class="clear-btn" onclick="clearCard('${uid}')">Clear Data</button>`;
+        const keyOption = type === 'room' ? `<div style="font-size:9px; color:var(--key-pink); font-weight:bold;"><input type="checkbox" id="key-${uid}" onchange="validate('${uid}')"> KEY</div>` : '<div></div>';
+        const personsField = type === 'room' ? `<div class="form-group small-field"><label>Pax</label><input type="number" id="p-${uid}" value="1" oninput="validate('${uid}')"></div>` : '';
+
+        div.innerHTML = `
+            <div class="card-header">${headerH3}${keyOption}</div>
+            <div class="form-group"><label>Guest Name</label><input type="text" id="name-${uid}" oninput="validate('${uid}')"></div>
+            <div class="form-group"><label>Place</label><input type="text" id="place-${uid}" oninput="validate('${uid}')"></div>
+            ${personsField}
+            <div class="form-group"><label>In</label><input type="date" id="in-${uid}" oninput="validate('${uid}')"></div>
+            <div class="form-group"><label>Out</label><input type="date" id="out-${uid}" oninput="validate('${uid}')"></div>
+            <button class="print-btn" onclick="preparePrint('${uid}', '${label}')">Print</button>
+            <button class="clear-btn" onclick="clearCard('${uid}')">Clear</button>
+        `;
         container.appendChild(div);
+    }
+
+    function filterByStatus(type, event) {
+        document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-stat'));
+        if(event && event.currentTarget && event.currentTarget.classList.contains('stat-card')) {
+            event.currentTarget.classList.add('active-stat');
+        }
+        document.getElementById('globalSearch').value = "";
+        if (type === 'all') {
+            const singleBlockTab = document.getElementById('tab-SingleBlock');
+            if (singleBlockTab) nav1({ currentTarget: singleBlockTab }, 'SingleBlock');
+            const gangaBtn = document.getElementById('sub-Ganga');
+            if (gangaBtn) nav2({ currentTarget: gangaBtn }, 'Ganga');
+        }
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.display = "flex"; 
+            if (type === 'all') return; 
+            const isOccupied = card.classList.contains('is-occupied');
+            const isDue = card.classList.contains('is-due');
+            if (type === 'avail' && isOccupied) card.style.display = "none";
+            else if (type === 'occ' && !isOccupied) card.style.display = "none";
+            else if (type === 'due' && !isDue) card.style.display = "none";
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+function preparePrint(uid, label) {
+    const rawValue = document.getElementById(`name-${uid}`).value;
+    const place = document.getElementById(`place-${uid}`).value || "N/A";
+    const checkin = formatDate(document.getElementById(`in-${uid}`).value);
+    const checkout = formatDate(document.getElementById(`out-${uid}`).value);
+    const persons = document.getElementById(`p-${uid}`) ? parseInt(document.getElementById(`p-${uid}`).value) || 1 : 1;
+    
+    // Extract only the first name (supports comma or semicolon)
+    // If you type "Tina, Jerry", firstName becomes "Tina"
+    const firstName = rawValue.split(/[;,]/)[0].trim();
+
+    const activeTab = document.querySelector('.tab-btn.active').innerText;
+    const activePage = document.querySelector('.page.active-block');
+    const activeSubBtn = activePage.querySelector('.sub-btn.active');
+    let buildingName = activeSubBtn ? activeSubBtn.innerText : "";
+    let finalLocation = "";
+
+    if (activeTab === "Single Block") { finalLocation = buildingName; } 
+    else if (activeTab === "Bodhisatva") { finalLocation = `Bodhisatva - ${buildingName}`; } 
+    else if (activeTab === "Dormitories") {
+        const activeSection = activePage.querySelector('.building-section.active-block');
+        const activeFloorBtn = activeSection.querySelector('.floor-btn.active');
+        const floorText = activeFloorBtn ? activeFloorBtn.firstChild.textContent.trim() : "";
+        finalLocation = `${buildingName} - ${floorText}`;
+    }
+
+    const printArea = document.getElementById('print-area');
+    printArea.innerHTML = ''; 
+
+    for(let i=0; i < persons; i++) {
+        // Logic: 
+        // Card 1 (i=0): Prints the first name extracted.
+        // Card 2+ (i>0): Prints an empty string for manual writing.
+        const displayName = (i === 0) ? firstName : "";
+
+        printArea.innerHTML += `
+            <div class="print-container">
+                <div class="print-card">
+                    <div class="print-header">Rishi Chaitanya Ashram</div>
+                    <div class="print-row"><span class="print-label">Building:</span> <span class="print-value" style="font-weight:bold;">${finalLocation}</span></div>
+                    <div class="print-row"><span class="print-label">Name:</span> <span class="print-value">${displayName}</span></div>
+                    <div class="print-row"><span class="print-label">Place:</span> <span class="print-value">${place}</span></div>
+                    <div class="print-row"><span class="print-label">Room / Bed No:</span> <span class="print-value">${label}</span></div>
+                    <div class="print-row"><span class="print-label">Check-in:</span> <span class="print-value">${checkin}</span></div>
+                    <div class="print-row"><span class="print-label">Check-out:</span> <span class="print-value">${checkout}</span></div>
+                    <div style="text-align:right; font-size:10px; margin-top:10px; opacity:0.5;">Slip ${i+1} of ${persons}</div>
+                </div>
+                
+                <div class="print-schedule">
+                    <div class="schedule-title">Daily Schedule</div>
+                    <div class="schedule-item"><span>06:15 AM</span> <span>Aarti</span></div>
+                    <div class="schedule-item"><span>06:45 AM</span> <span>Yoga (Saptrishi Hall)</span></div>
+                    <div class="schedule-item"><span>09:00 AM</span> <span>Bhojan Prasaad (Annapurna)</span></div>
+                    <div class="schedule-item"><span>10:00 AM</span> <span>Sewa (Cleaning/Assigned)</span></div>
+                    <div class="schedule-item"><span>11:00 AM</span> <span>Recorded Discourse</span></div>
+                    <div class="schedule-item"><span>05:00 PM</span> <span>Bhojan Prasaad (Annapurna)</span></div>
+                    <div class="schedule-item"><span>06:30 PM</span> <span>Aarti (Mandir/Madhushala)</span></div>
+                    <div class="schedule-item"><span>08:00 PM</span> <span>Abhyaas (At Your Place)</span></div>
+                    <div class="schedule-item"><span>09:00 PM</span> <span>Lights Out</span></div>
+                    
+                    <div class="schedule-footer">
+                        <div>• Laundry Service available, Contact Office Reception</div>
+                        <div>• Photography with Camera/Mobile is Prohibited</div>
+                        <div style="font-style:italic; font-size:10px; color:#555; margin-top:8px;">*Schedule is subject to change.</div>
+                    </div>
+                </div>
+            </div>`;
+    }
+    window.print();
+}
+
+
+    function searchGuest() {
+        const val = document.getElementById('globalSearch').value.toLowerCase();
+        document.querySelectorAll('.card').forEach(card => {
+            const name = card.querySelector('input[id^="name-"]').value.toLowerCase();
+            const place = card.querySelector('input[id^="place-"]').value.toLowerCase();
+            const label = card.querySelector('h3').innerText.toLowerCase();
+            card.style.display = (name.includes(val) || place.includes(val) || label.includes(val)) ? "flex" : "none";
+        });
+    }
+
+    function validate(uid, shouldSave = true) {
+        const name = document.getElementById(`name-${uid}`).value;
+        const out = document.getElementById(`out-${uid}`).value;
+        const card = document.getElementById(`card-${uid}`);
+        const key = document.getElementById(`key-${uid}`);
+        const today = new Date().toISOString().split('T')[0];
+        
+        card.classList.remove('is-occupied', 'is-due', 'is-key');
+        if(name.trim()) card.classList.add('is-occupied');
+        if(key && key.checked) card.classList.add('is-key');
+        if(name.trim() && out === today) card.classList.add('is-due');
+        updateStats(); if(shouldSave) save();
+    }
+
+    function applyBulk() {
+        const n = document.getElementById('bulk-name').value;
+        const p = document.getElementById('bulk-place').value;
+        const i = document.getElementById('bulk-in').value;
+        const o = document.getElementById('bulk-out').value;
+        document.querySelectorAll('.bulk-cb:checked').forEach(cb => {
+            const uid = cb.closest('.card').id.replace('card-','');
+            if(n) document.getElementById(`name-${uid}`).value = n;
+            if(p) document.getElementById(`place-${uid}`).value = p;
+            if(i) document.getElementById(`in-${uid}`).value = i;
+            if(o) document.getElementById(`out-${uid}`).value = o;
+            validate(uid, false);
+        });
+        save(); deselectAll();
+    }
+
+    function updateStats() {
+        document.getElementById('stat-total').innerText = document.querySelectorAll('.card').length;
+        document.getElementById('stat-occ').innerText = document.querySelectorAll('.is-occupied').length;
+        document.getElementById('stat-avail').innerText = document.querySelectorAll('.card').length - document.querySelectorAll('.is-occupied').length;
+        document.getElementById('stat-due').innerText = document.querySelectorAll('.is-due').length;
+        ['NG','NF','NS','VG','VF','VS','GG','GF','GS'].forEach(id => {
+            const grid = document.getElementById(`grid-${id}`);
+            if(grid) {
+                const cards = grid.querySelectorAll('.card');
+                let occCount = 0, guestCount = 0;
+                cards.forEach(c => {
+                    const uid = c.id.replace('card-','');
+                    const n = document.getElementById(`name-${uid}`);
+                    if(n && n.value.trim()){
+                        occCount++;
+                        const p = document.getElementById(`p-${uid}`);
+                        guestCount += p ? (parseInt(p.value) || 0) : 1;
+                    }
+                });
+                const box = document.getElementById(`info-${id}`);
+                if(box) box.innerHTML = `Beds: ${cards.length} | Occ: <b>${occCount}</b> | Guests: <b>${guestCount}</b>`;
+            }
+        });
     }
 
     function toggleSelect(uid) {
@@ -216,134 +496,33 @@
         document.getElementById('bulk-count').innerText = `${count} Selected`;
     }
 
-    window.applyBulk = () => {
-        const n = document.getElementById('bulk-name').value;
-        const i = document.getElementById('bulk-in').value;
-        const o = document.getElementById('bulk-out').value;
-        document.querySelectorAll('.bulk-cb:checked').forEach(cb => {
-            const uid = cb.closest('.card').id.replace('card-','');
-            if(n) document.getElementById(`name-${uid}`).value = n;
-            if(i) document.getElementById(`in-${uid}`).value = i;
-            if(o) document.getElementById(`out-${uid}`).value = o;
-            document.getElementById(`p-${uid}`).value = 1;
-            validate(uid, false);
-        });
-        save(); deselectAll();
-    };
-
-    window.bulkClear = () => {
-        if(confirm("Clear data for all selected items?")) {
-            document.querySelectorAll('.bulk-cb:checked').forEach(cb => {
-                const uid = cb.closest('.card').id.replace('card-','');
-                ['name-', 'p-', 'in-', 'out-'].forEach(pre => {
-                    if(document.getElementById(pre+uid)) document.getElementById(pre+uid).value = "";
-                });
-                validate(uid, false);
-            });
-            save(); deselectAll();
-        }
-    };
-
-    window.deselectAll = () => {
+    function deselectAll() {
         document.querySelectorAll('.bulk-cb').forEach(cb => cb.checked = false);
         document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
         document.getElementById('bulk-bar').style.display = 'none';
-    };
-
-    function filterBy(type) {
-        document.querySelectorAll('.card').forEach(c => {
-            if (type === 'all') {
-                c.style.display = 'flex';
-            } else if (type === 'due') {
-                // Strict check: Only show orange cards
-                c.style.display = c.classList.contains('is-due') ? 'flex' : 'none';
-            } else if (type === 'occupied') {
-                c.style.display = c.classList.contains('is-occupied') ? 'flex' : 'none';
-            } else if (type === 'available') {
-                c.style.display = !c.classList.contains('is-occupied') ? 'flex' : 'none';
-            }
-        });
     }
 
-    function searchGuest() {
-        const q = document.getElementById('globalSearch').value.toLowerCase();
-        document.querySelectorAll('.card').forEach(c => {
-            const name = c.querySelector('input[id^="name"]').value.toLowerCase();
-            if (!q || name.includes(q)) {
-                c.style.display = "flex";
-                if(q && name.includes(q)) {
-                    let pFloor = c.closest('.floor-section'), pBuild = c.closest('.building-section'), pPage = c.closest('.page');
-                    if (pPage) nav1(null, pPage.id);
-                    if (pBuild) nav2(null, pBuild.id);
-                    if (pFloor) nav3(null, pFloor.id);
-                }
-            } else c.style.display = "none";
-        });
-    }
-
-    function validate(uid, shouldSave = true) {
-        const name = document.getElementById(`name-${uid}`).value;
-        const keyEl = document.getElementById(`key-${uid}`);
-        const out = document.getElementById(`out-${uid}`).value;
-        const card = document.getElementById(`card-${uid}`);
-        const today = new Date().toISOString().split('T')[0];
-        
-        card.classList.remove('is-occupied', 'is-due', 'is-key');
-        if(name.trim()) card.classList.add('is-occupied');
-        if(keyEl && keyEl.checked) card.classList.add('is-key');
-        if(name.trim() && out === today) card.classList.add('is-due');
-        
-        updateStats(); if(shouldSave) save();
-    }
-
-    function updateStats() {
-        document.getElementById('stat-total').innerText = document.querySelectorAll('.card').length;
-        document.getElementById('stat-occ').innerText = document.querySelectorAll('.is-occupied').length;
-        document.getElementById('stat-avail').innerText = document.querySelectorAll('.card').length - document.querySelectorAll('.is-occupied').length;
-        document.getElementById('stat-due').innerText = document.querySelectorAll('.is-due').length;
-
-        ['NG','NF','NS','VG','VF','VS','GG','GF','GS'].forEach(id => {
-            const grid = document.getElementById(`grid-${id}`);
-            if(grid) {
-                const gCards = grid.querySelectorAll('.card');
-                let occ = 0, guests = 0;
-                gCards.forEach(c => {
-                    const uid = c.id.replace('card-','');
-                    if(document.getElementById(`name-${uid}`).value.trim()){
-                        occ++; guests += parseInt(document.getElementById(`p-${uid}`).value) || 0;
-                    }
-                });
-                const info = document.getElementById(`info-${id}`);
-                if(info) info.innerHTML = `Total Beds: ${gCards.length} | Occupied: ${occ}<br>Total Guests: ${guests}`;
-            }
-        });
-    }
-
-    window.nav1 = (e, id) => { 
+    function nav1(e, id) { 
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-block')); 
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
-        document.getElementById(id).classList.add('active-block'); 
-        if(e) e.currentTarget.classList.add('active'); else if(id) document.getElementById(`tab-${id}`).classList.add('active');
-    };
-    window.nav2 = (e, s) => { 
+        document.getElementById(id).classList.add('active-block'); e.currentTarget.classList.add('active');
+    }
+    function nav2(e, s) { 
         const p = document.getElementById(s).closest('.page');
         p.querySelectorAll('.building-section').forEach(sec => sec.classList.remove('active-block')); 
         p.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active')); 
-        document.getElementById(s).classList.add('active-block'); 
-        if(e) e.currentTarget.classList.add('active'); else if(document.getElementById(`sub-${s}`)) document.getElementById(`sub-${s}`).classList.add('active');
-    };
-    window.nav3 = (e, f) => { 
+        document.getElementById(s).classList.add('active-block'); e.currentTarget.classList.add('active');
+    }
+    function nav3(e, f) { 
         const b = document.getElementById(f).closest('.building-section');
         b.querySelectorAll('.floor-section').forEach(sec => sec.classList.remove('active-block')); 
         b.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active')); 
-        document.getElementById(f).classList.add('active-block'); 
-        if(e) e.currentTarget.classList.add('active'); else if(document.getElementById(`flr-${f}`)) document.getElementById(`flr-${f}`).classList.add('active');
-    };
+        document.getElementById(f).classList.add('active-block'); e.currentTarget.classList.add('active');
+    }
 
     function save() { const d = {}; document.querySelectorAll('input:not([class="bulk-cb"])').forEach(i => { if(i.id) d[i.id] = i.type === 'checkbox' ? i.checked : i.value; }); db.ref('roomData/').set(d); }
-    function clearCard(uid) { if(confirm("Clear this card?")) { ['name-', 'p-', 'in-', 'out-'].forEach(pre => { if(document.getElementById(pre+uid)) document.getElementById(pre+uid).value = ""; }); if(document.getElementById('key-'+uid)) document.getElementById('key-'+uid).checked = false; validate(uid); } }
-    function resetAllData() { if(confirm("ARE YOU SURE? This clears EVERYTHING.")){ db.ref('roomData/').remove(); location.reload(); }}
-    window.goMain = () => { location.reload(); };
+    function clearCard(uid) { if(confirm("Clear card?")) { ['name-', 'place-', 'p-', 'in-', 'out-'].forEach(pre => { if(document.getElementById(pre+uid)) document.getElementById(pre+uid).value = ""; }); if(document.getElementById('key-'+uid)) document.getElementById('key-'+uid).checked = false; validate(uid); } }
+    function resetAllData() { if(confirm("Reset all?")){ db.ref('roomData/').remove(); location.reload(); }}
 
     config.forEach(c => {
         const el = document.getElementById(c.id);
@@ -360,14 +539,24 @@
     });
 
     function exportCSV() {
-        let csv = "Location,Guest,Persons,In,Out\n";
+        let csv = "Location,Guest,Place,Pax,In,Out\n";
         document.querySelectorAll('.card').forEach(c => {
             const uid = c.id.replace('card-', '');
-            csv += `${c.querySelector('h3').innerText},"${document.getElementById('name-'+uid).value}",${document.getElementById('p-'+uid).value},${document.getElementById('in-'+uid).value},${document.getElementById('out-'+uid).value}\n`;
+            const n = document.getElementById('name-'+uid).value;
+            const pl = document.getElementById('place-'+uid).value;
+            const p = document.getElementById('p-'+uid) ? document.getElementById('p-'+uid).value : 1;
+            const i = document.getElementById('in-'+uid).value;
+            const o = document.getElementById('out-'+uid).value;
+            csv += `${c.querySelector('h3').innerText.replace(',','')},"${n}","${pl}",${p},${i},${o}\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Allocation_Data.csv'; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Room_Data.csv'; a.click();
     }
+function formatDate(dateStr) {
+    if (!dateStr) return "N/A";
+    const [year, month, day] = dateStr.split('-');
+    return `${day}/${month}/${year}`;
+}
 </script>
 </body>
 </html>
