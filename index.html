@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,20 +202,6 @@
         <div class="stat-card" onclick="filterByStatus('occ', event)">Occupied: <b id="stat-occ">0</b></div>
         <div class="stat-card" onclick="filterByStatus('due', event)">Due Today: <b id="stat-due">0</b></div>
     </div>
-
-    <div class="stats-container" style="background: rgba(255,255,255,0.05); margin-top: 10px; padding: 10px 15px; border-radius: 8px;">
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <div class="form-group">
-                <label style="color: #cbd5e1; font-size: 9px;">Arrival Date:</label>
-                <input type="date" id="filter-in" onchange="findGuestsByDate('in')" style="padding: 4px; border-radius: 4px; border: none; font-size: 11px;">
-            </div>
-            <div class="form-group">
-                <label style="color: #cbd5e1; font-size: 9px;">Departure Date:</label>
-                <input type="date" id="filter-out" onchange="findGuestsByDate('out')" style="padding: 4px; border-radius: 4px; border: none; font-size: 11px;">
-            </div>
-            <button onclick="clearDateFilter()" class="btn-header" style="background: #475569; padding: 5px 12px; margin-top: 10px;">Clear Dates</button>
-        </div>
-    </div>
 </header>
 
 <nav class="nav-l1 no-print">
@@ -372,6 +360,8 @@ function preparePrint(uid, label) {
     const checkout = formatDate(document.getElementById(`out-${uid}`).value);
     const persons = document.getElementById(`p-${uid}`) ? parseInt(document.getElementById(`p-${uid}`).value) || 1 : 1;
     
+    // Extract only the first name (supports comma or semicolon)
+    // If you type "Tina, Jerry", firstName becomes "Tina"
     const firstName = rawValue.split(/[;,]/)[0].trim();
 
     const activeTab = document.querySelector('.tab-btn.active').innerText;
@@ -393,6 +383,9 @@ function preparePrint(uid, label) {
     printArea.innerHTML = ''; 
 
     for(let i=0; i < persons; i++) {
+        // Logic: 
+        // Card 1 (i=0): Prints the first name extracted.
+        // Card 2+ (i>0): Prints an empty string for manual writing.
         const displayName = (i === 0) ? firstName : "";
 
         printArea.innerHTML += `
@@ -564,46 +557,6 @@ function formatDate(dateStr) {
     if (!dateStr) return "N/A";
     const [year, month, day] = dateStr.split('-');
     return `${day}/${month}/${year}`;
-}
-
-// NEW FILTERING FUNCTIONS
-function findGuestsByDate(type) {
-    const filterDate = document.getElementById(`filter-${type}`).value;
-    if (!filterDate) return;
-
-    // Clear the other date input to avoid mixed results
-    if (type === 'in') document.getElementById('filter-out').value = '';
-    else document.getElementById('filter-in').value = '';
-
-    const cards = document.querySelectorAll('.card');
-    let foundCount = 0;
-
-    cards.forEach(card => {
-        const uid = card.id.replace('card-', '');
-        const dateInput = document.getElementById(`${type}-${uid}`);
-        const dateVal = dateInput ? dateInput.value : null;
-
-        if (dateVal === filterDate) {
-            card.style.display = 'flex'; 
-            foundCount++;
-        } else {
-            card.style.display = 'none'; 
-        }
-    });
-
-    // Automatically expand all tabs so user can see results across buildings
-    document.querySelectorAll('.page').forEach(p => p.classList.add('active-block'));
-    document.querySelectorAll('.building-section').forEach(s => s.classList.add('active-block'));
-    document.querySelectorAll('.floor-section').forEach(f => f.classList.add('active-block'));
-    
-    alert(`Found ${foundCount} guests for the selected date.`);
-}
-
-function clearDateFilter() {
-    document.getElementById('filter-in').value = '';
-    document.getElementById('filter-out').value = '';
-    // Reload is the cleanest way to restore the original tab UI state
-    location.reload(); 
 }
 </script>
 </body>
